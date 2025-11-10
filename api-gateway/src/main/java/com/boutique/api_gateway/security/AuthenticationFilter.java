@@ -33,11 +33,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/api/auth/login",
             "/api/auth/login2",
             "/api/auth/refresh",
-            "/api/clientes/con-usuario", //registro de clientes
-
-            // --- AÑADIR ESTAS LÍNEAS ---
-            "/v3/api-docs",     // Para el JSON de la especificación
-            "/swagger"          // Para la interfaz de usuario de Swagger
+            "/api/clientes/con-usuario"
     );
 
     @Override
