@@ -38,17 +38,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "api/auth/**",
-                                "/v3/api-docs/**",        // Rutas de Swagger/OpenAPI
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
+//                        .requestMatchers(
+//                                "api/auth/**",
+//                                "/v3/api-docs/**",        // Rutas de Swagger/OpenAPI
+//                                "/swagger-ui/**",
+//                                "/swagger-ui.html",
+//                                "/swagger-resources/**",
+//                                "/webjars/**"
+//                        ).permitAll()
                         // ¡CAMBIO CLAVE!
                         // Permitimos todas las demás peticiones porque confiamos
                         // en que el Gateway ya las autenticó.
@@ -75,29 +75,32 @@ public class SecurityConfig {
     }
     //http://localhost:8080/swagger-ui/index.html#/
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // --- ¡CAMBIO DE SEGURIDAD IMPORTANTE! ---
-        // Ya no permitimos peticiones del frontend (5173).
-        // SOLO permitimos peticiones que vengan del API Gateway (8080).
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-
-        // Métodos permitidos
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-
-        // Headers permitidos
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-
-        // Permitir credenciales si las necesitas (cookies, headers auth)
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        // --- ¡CAMBIO DE SEGURIDAD IMPORTANTE! ---
+//        // Ya no permitimos peticiones del frontend (5173).
+//        // SOLO permitimos peticiones que vengan del API Gateway (8080).
+//        configuration.setAllowedOrigins(List.of(
+//                "http://localhost:8080",
+//                "http://localhost:5173"
+//        ));
+//
+//        // Métodos permitidos
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+//
+//        // Headers permitidos
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//
+//        // Permitir credenciales si las necesitas (cookies, headers auth)
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        return source;
+//    }
 }
 
 //@Configuration
