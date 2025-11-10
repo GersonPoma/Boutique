@@ -9,11 +9,52 @@ spring:
     gateway:
       server:
         webflux:
+
+          # --- CONFIGURACIÓN DE CORS ACTUALIZADA ---
+          # Esta es la nueva ruta correcta para la configuración de CORS
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "http://localhost:5173"
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers:
+                  - Authorization
+                  - Content-Type
+                allow-credentials: true
+          # --- FIN DE CORS ---
+
+          # Las rutas van al mismo nivel que globalcors
           routes:
             - id: boutique-service
               uri: http://localhost:8081
               predicates:
                 - Path=/api/**
+
+            - id: openapi-docs
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v3/api-docs/**
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: "/v3/api-docs(?<segment>/?.*)"
+                    replacement: "/v3/api-docs${segment}"
+
+            - id: swagger-ui
+              uri: http://localhost:8081
+              predicates:
+                - Path=/swagger/**
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: "/swagger(?<segment>/?.*)"
+                    replacement: "/swagger${segment}"
 
             - id: ai-service
               uri: http://localhost:8000
