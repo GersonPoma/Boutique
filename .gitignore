@@ -1,0 +1,38 @@
+# Root-level .gitignore for monorepo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE and editor settings (common across projects)
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs at root
+*.log
+logs/
+log/
+
+# Environment files (if you keep global env vars)
+.env
+.env.local
+.env.*.local
+
+# Node / Java / Vite temp caches (just in case)
+node_modules/
+dist/
+build/
+target/
+out/
+.vite/
+
+# Backup / temp files
+*.tmp
+*.bak
+*.old
+*~

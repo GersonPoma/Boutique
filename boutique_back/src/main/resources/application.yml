@@ -1,0 +1,29 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: boutique
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/boutique
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # o validate / none / create / create-drop
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+jwt:
+  secret: "%<Ag|5%fylZQoKK>cLS2tz{G26i.HT3W8m4-_TraiUD"
+  access:
+    expiration: 604800000 #900000  # 15 minutos
+  refresh:
+    expiration: 604800000  # 7 días
+
+springdoc:
+  swagger-ui:
+    path: /swagger
