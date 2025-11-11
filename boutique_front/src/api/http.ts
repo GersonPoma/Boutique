@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/';
 
 export const http = axios.create({
   baseURL: API_URL,
-  timeout: 15000,
+  timeout: 60000, // 60 segundos (aumentado para reportes con IA)
 });
 
 let onUnauthorized: (() => void) | null = null;

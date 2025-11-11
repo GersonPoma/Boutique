@@ -6,7 +6,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { SidebarItem } from './SidebarItem';
 import { useAuth } from '../../context/AuthContext';
 import { Rol } from '../../types/usuario';
-import { InventoryRounded, PointOfSaleSharp } from '@mui/icons-material';
+import { InventoryRounded, PointOfSaleSharp, Report } from '@mui/icons-material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 type MenuItem = {
@@ -26,6 +26,9 @@ const MENU: MenuItem[] = [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
   ] },
   { label: 'Pagos', to: '/pago', icon: <AccountBalanceWalletIcon />, roles: [
+    Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
+  ] },
+  { label: 'Reportes', to: '/reportes', icon: <Report />, roles: [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
   ] },
 ];

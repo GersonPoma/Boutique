@@ -8,6 +8,7 @@ import { Usuarios } from '../pages/usuarios/Usuarios';
 import { Inventarios } from '../pages/inventarios/Inventarios';
 import { Ventas } from '../pages/ventas/Ventas';
 import { Pagos } from '../pages/pagos/Pagos';
+import { Reportes } from '../pages/reportes/Reportes';
 
 export const AppRouter = () => (
   <BrowserRouter>
@@ -26,6 +27,7 @@ export const AppRouter = () => (
         <Route path="inventario" element={<Inventarios />} />
         <Route path="venta" element={<Ventas />} />
         <Route path="pago" element={<Pagos />} />
+        <Route path="reportes" element={<Reportes />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
