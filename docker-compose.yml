@@ -1,0 +1,100 @@
+# Borramos la línea 'version' que es obsoleta
+
+services:
+  # 1. Servicio de Base de Datos PostgreSQL
+  db:
+    image: postgres:17-alpine
+    container_name: boutique-db
+    environment:
+      POSTGRES_DB: boutique2       # <-- CORREGIDO (una S)
+      POSTGRES_USER: postgres     # <-- CORREGIDO (una S)
+      POSTGRES_PASSWORD: admin    # <-- CORREGIDO (una S)
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # AÑADIDO: Chequeo de salud para que nadie se conecte antes de tiempo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d boutique2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Servicio Backend (boutique_back)
+  boutique-back:
+    container_name: boutique-back
+    build:
+      context: ./boutique_back
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/boutique2
+    # MODIFICADO: Ahora espera a que la 'db' esté 100% saludable
+    depends_on:
+      db:
+        condition: service_healthy
+    # AÑADIDO: Chequeo de salud para que el gateway sepa cuándo está listo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/swagger"]
+      interval: 15s # Le damos más tiempo para arrancar
+      timeout: 5s
+      retries: 10
+
+  # 3. Servicio de IA (ia_service)
+  ia-service:
+    container_name: ia-service
+    build:
+      context: ./ia_service
+    ports:
+      - "8000:8000"
+    # AÑADIDO: Chequeo de salud simple (Django es rápido)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 4. Servicio API Gateway
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    # MODIFICADO: Añadimos los PREDICATES que faltaban
+    environment:
+      # Ruta 0 (boutique-service)
+      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://boutique-back:8081
+      SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0: Path=/api/**
+
+      # Ruta 1 (openapi-docs)
+      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://boutique-back:8081
+      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/v3/api-docs/**
+
+      # Ruta 2 (swagger-ui)
+      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://boutique-back:8081
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/swagger/**
+
+      # Ruta 3 (ai-service)
+      SPRING_CLOUD_GATEWAY_ROUTES_3_URI: http://ia-service:8000
+      SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0: Path=/ia/**
+    # MODIFICADO: Ahora espera a que los 2 servicios estén saludables
+    depends_on:
+      boutique-back:
+        condition: service_healthy
+      ia-service:
+        condition: service_healthy
+
+  # 5. Servicio Frontend (boutique_front)
+  boutique-front:
+    container_name: boutique-front
+    build:
+      context: ./boutique_front
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway # No necesita esperar a que esté 'healthy'
+
+# Definimos el volumen para persistir los datos de la BD
+volumes:
+  postgres_data:
