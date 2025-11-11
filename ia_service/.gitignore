@@ -1,0 +1,116 @@
+# ----------------------------------------------------------------
+# .gitignore para Python, Django, VS Code y PyCharm
+# ----------------------------------------------------------------
+
+# ### Entornos Virtuales ###
+# ¡Nunca subas tu entorno virtual! Contiene paquetes específicos
+# de tu sistema operativo y puede ser muy pesado.
+# En su lugar, usa un archivo requirements.txt
+/venv/
+/.venv/
+/env/
+/.env/
+/virtualenv/
+/lib/
+/lib64/
+/include/
+/bin/
+
+# ### Archivos de Secretos y Configuración Local ###
+# ¡MUY IMPORTANTE! Nunca subas archivos con contraseñas,
+# API keys o configuraciones de desarrollo local.
+.env
+.env.*
+*.local
+local_settings.py
+secret_key.py
+
+# ### Python General ###
+# Archivos de bytecode y optimizados
+*.py[cod]
+*$py.class
+
+# Caché de Python
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Archivos de distribución / instalación
+/build/
+/dist/
+/downloads/
+/eggs/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+sdist/
+wheel/
+*.whl
+
+# Reportes de pruebas y cobertura
+.coverage
+.coverage.*
+/htmlcov/
+nosetests.xml
+coverage.xml
+*.lcov
+*.prof
+
+# Jupyter Notebook
+.ipynb_checkpoints
+profile_default/
+
+# ### Específico de Django ###
+# Base de datos de desarrollo. ¡Nunca la subas!
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de media (subidos por usuarios)
+# Generalmente no se rastrean, se almacenan en S3 u similar
+/media/
+
+# Archivos estáticos recolectados por 'collectstatic'
+# Estos se generan en el servidor, no necesitas rastrearlos
+/staticfiles/
+/static_root/
+
+# Archivos de log
+*.log
+logs/
+
+# ### IDEs y Editores ###
+
+# PyCharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ### Sistema Operativo ###
+# Archivos "basura" de SO que no deben estar en ningún repo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux (archivos de backup de editores)
+*~
+.#*

@@ -23,6 +23,16 @@ log/
 .env.local
 .env.*.local
 
+/venv/
+/.venv/
+/env/
+/.env/
+/virtualenv/
+/lib/
+/lib64/
+/include/
+/bin/
+
 # Node / Java / Vite temp caches (just in case)
 node_modules/
 dist/
