@@ -5,7 +5,7 @@ package com.boutique.entity.enums;
  */
 
 public enum Cargo {
-    REGENTE,
+    GERENTE,
     VENDEDOR,
     CAJERO,
     INVENTARISTA
