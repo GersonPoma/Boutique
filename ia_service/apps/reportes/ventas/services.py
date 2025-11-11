@@ -41,15 +41,21 @@ def detectar_rango_tiempo(text):
         fin = inicio + relativedelta(months=1, days=-1)
         return inicio, fin
     elif "hace" in text:
-        # Capturar frases tipo "hace 5 meses" o "hace 1 año"
-        m_mes = re.search(r"hace\s+(\d+)\s+mes", text)
-        m_anio = re.search(r"hace\s+(\d+)\s+año", text)
+        # Capturar frases tipo "hace 5 meses" o "hace 1 año" (singular y plural)
+        m_mes = re.search(r"hace\s+(\d+)\s+mes(?:es)?", text)
+        m_anio = re.search(r"hace\s+(?:un|una|\d+)\s+año(?:s)?", text)
+
         if m_mes:
             meses = int(m_mes.group(1))
             inicio = hoy - relativedelta(months=meses)
             return inicio, hoy
         elif m_anio:
-            años = int(m_anio.group(1))
+            # Capturar "un" o "una" como 1
+            cantidad = m_anio.group(0)
+            if "un " in cantidad or "una " in cantidad:
+                años = 1
+            else:
+                años = int(re.search(r"\d+", cantidad).group())
             inicio = hoy - relativedelta(years=años)
             return inicio, hoy
 
@@ -89,14 +95,20 @@ def detectar_condiciones_enums(text):
 def detectar_condicion_monto(text):
     condicion = {}
 
-    if re.search(r"superen|mayor(es)? a|más de", text):
+    # Detectar negaciones: "no sean mayor" = "menor", "no superen" = "menor"
+    if re.search(r"no\s+(?:sean?\s+)?(?:superen|mayor(?:es)?|pasen)", text):
+        condicion["operador"] = "menor"
+    elif re.search(r"no\s+(?:sean?\s+)?(?:menor(?:es)?|bajen)", text):
         condicion["operador"] = "mayor"
-    elif re.search(r"no pasen|menor(es)? a|menos de", text):
+    # Detectar operadores positivos
+    elif re.search(r"superen|mayor(?:es)?\s+(?:a|de)|más\s+de", text):
+        condicion["operador"] = "mayor"
+    elif re.search(r"no\s+pasen|menor(?:es)?\s+(?:a|de)|menos\s+de", text):
         condicion["operador"] = "menor"
 
     # Buscar números cerca de palabras clave de comparación o moneda
     # Evitamos números en expresiones de tiempo como "hace 3 meses"
-    match = re.search(r'(?:superen|mayor(?:es)? a|más de|no pasen|menor(?:es)? a|menos de)\s+(?:de\s+)?(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?|usd|dólares?|euros?)?', text)
+    match = re.search(r'(?:superen|mayor(?:es)?\s+(?:a|de)|más\s+de|no\s+(?:sean?\s+)?(?:superen|mayor(?:es)?|pasen)|no\s+pasen|menor(?:es)?\s+(?:a|de)|menos\s+de)\s+(?:de\s+)?(\d+(?:[.,]\d+)?)\s*(?:bs|bolivianos?|usd|dólares?|euros?)?', text)
 
     if not match:
         # Buscar números seguidos directamente de moneda

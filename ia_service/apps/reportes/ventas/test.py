@@ -10,6 +10,7 @@ frases = [
     "quiero un reporte de las ventas a crédito completadas este año que superen los 2000 bolivianos",
     "dame un reporte de las ventas online pendientes de hace 3 meses que no pasen de 1500 bs",
     "dame un reporte en excel de las ventas fisicas completadas pagados a credito del mes pasado",
+    "reporte de la venta que no sean mayor a 2500 bolivianos de hace un año",
 ]
 
 for f in frases:
