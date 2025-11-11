@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from .serializers import TextInputSerializer
 from apps.reportes.ventas.services import analizar_nlp
@@ -11,6 +12,8 @@ import requests
 
 
 class NLPAnalyzeView(APIView):
+    authentication_classes = []  # Deshabilitar autenticación JWT
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="Analiza texto en lenguaje natural y genera reporte",
         description="Recibe texto en lenguaje natural (o voz convertida a texto), lo analiza y genera un reporte de ventas en el formato solicitado (Excel o PDF).",
@@ -78,6 +81,9 @@ class NLPAnalyzeView(APIView):
 
 
 class NLPAnalyzeProductosView(APIView):
+    authentication_classes = []  # Deshabilitar autenticación JWT
+    permission_classes = [AllowAny]
+
     @extend_schema(
         summary="Analiza texto en lenguaje natural y genera reporte de productos",
         description="Recibe texto en lenguaje natural para generar reportes de productos más vendidos, con filtros por marca, género, tipo de prenda, etc. Combina datos de Venta, DetalleVenta y Producto.",
