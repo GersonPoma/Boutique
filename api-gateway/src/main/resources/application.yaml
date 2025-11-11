@@ -5,38 +5,36 @@ spring:
   application:
     name: api-gateway
 
-  security:
-    user:
-      name: none
-      password: none
-
   cloud:
     gateway:
       server:
         webflux:
-
-          # --- CONFIGURACIÓN DE CORS ACTUALIZADA ---
-          # Esta es la nueva ruta correcta para la configuración de CORS
+          # --- CONFIGURACIÓN DE CORS ---
           globalcors:
             cors-configurations:
               '[/**]':
-                allowed-origins:
-                 - "http://localhost:5173"
-                 - "http://localhost:8080"
-                allowed-methods:
+                allowedOrigins:
+                  - "http://localhost:5173"
+                  - "http://localhost:8080"
+                allowedMethods:
                   - GET
                   - POST
                   - PUT
                   - PATCH
                   - DELETE
                   - OPTIONS
-                allowed-headers:
-                  - Authorization
+                allowedHeaders:
+                  - "*"
+                exposedHeaders:
+                  - Content-Disposition
                   - Content-Type
-                allow-credentials: true
+                  - Content-Length
+                  - Authorization
+                allowCredentials: true
+                maxAge: 3600
           # --- FIN DE CORS ---
 
-          # Las rutas van al mismo nivel que globalcors
+          # Las rutas van dentro de server.webflux
           routes:
             - id: boutique-service
               uri: http://localhost:8081

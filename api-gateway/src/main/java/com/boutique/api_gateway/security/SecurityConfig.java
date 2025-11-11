@@ -12,6 +12,9 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * Confiamos en nuestro 'AuthenticationFilter' global para manejar la
  * seguridad de las rutas que van al backend.
+ *
+ * NOTA: La configuración de CORS se maneja en application.yaml
+ * para evitar duplicación y conflictos.
  */
 @Configuration
 @EnableWebFluxSecurity // Importante: Usar la versión reactiva (WebFlux) para Gateway

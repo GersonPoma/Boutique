@@ -1,6 +1,8 @@
 package com.boutique.api_gateway.security;
 
 import io.jsonwebtoken.JwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -25,6 +27,8 @@ import java.util.function.Predicate;
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -39,6 +43,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
+        String method = request.getMethod().toString();
+
+        log.info("🔍 [AuthFilter] {} {} - Iniciando validación", method, path);
 
         // 1. Comprobar si la ruta es pública
         Predicate<ServerHttpRequest> isPublic =
@@ -47,6 +55,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         if (isPublic.test(request)) {
             // Si es pública, dejarla pasar sin verificar
+            log.info("✅ [AuthFilter] {} {} - Ruta pública, permitiendo acceso", method, path);
             return chain.filter(exchange);
         }
 
@@ -54,33 +63,34 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         HttpHeaders headers = request.getHeaders();
         if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
             // 3. Si no hay encabezado, rechazar
+            log.warn("❌ [AuthFilter] {} {} - No se proporcionó header de autorización", method, path);
             return this.onError(exchange, "No se proporcionó encabezado de autorización", HttpStatus.UNAUTHORIZED);
         }
 
         String authHeader = headers.getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             // 3. Si el encabezado no es "Bearer", rechazar
+            log.warn("❌ [AuthFilter] {} {} - Header de autorización inválido: {}", method, path, authHeader);
             return this.onError(exchange, "Encabezado de autorización inválido", HttpStatus.UNAUTHORIZED);
         }
 
         // 4. Extraer el token
         String token = authHeader.substring(7); // Quita "Bearer "
+        log.debug("🔑 [AuthFilter] {} {} - Token recibido (primeros 20 chars): {}...", method, path, token.substring(0, Math.min(20, token.length())));
 
         try {
             // 5. Validar el token
             jwtUtils.validateToken(token);
+            log.info("✅ [AuthFilter] {} {} - Token JWT válido, reenviando al microservicio", method, path);
+
         } catch (JwtException e) {
             // 6. Si la validación falla (expirado, firma mal), rechazar
-            return this.onError(exchange, "Token JWT inválido o expirado", HttpStatus.UNAUTHORIZED);
+            log.error("❌ [AuthFilter] {} {} - Token JWT inválido o expirado: {}", method, path, e.getMessage());
+            return this.onError(exchange, "Token JWT inválido o expirado: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
 
-        // 7. (Opcional) Si quieres pasar datos del token al microservicio (ej. ID de usuario)
-        // Claims claims = jwtUtils.extractAllClaims(token);
-        // exchange.getRequest().mutate()
-        //         .header("X-User-Id", String.valueOf(claims.get("id")))
-        //         .header("X-User-Rol", String.valueOf(claims.get("rol")));
-
-        // 8. El token es válido, dejar pasar la petición
+        // 7. El token es válido, continuar con la petición original
+        // El header Authorization se preserva automáticamente y se reenvía al microservicio
         return chain.filter(exchange);
     }
 
@@ -90,6 +100,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
+
+        log.error("🚫 [AuthFilter] Respondiendo con error {}: {}", httpStatus.value(), err);
 
         // Establecer el tipo de contenido a JSON
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, "application/json");
