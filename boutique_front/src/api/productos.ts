@@ -1,9 +1,9 @@
 import { apiClient } from "./client";
 
 export const getNombreProducto = (idProducto: number) => {
-    return apiClient.get<string>(`/productos/obtener-nombre/${idProducto}`);
+    return apiClient.get<string>(`api/productos/obtener-nombre/${idProducto}`);
 }
 
 export const getPrecioProducto = (idProducto: number) => {
-    return apiClient.get<number>(`/productos/obtener-precio/${idProducto}`);
+    return apiClient.get<number>(`api/productos/obtener-precio/${idProducto}`);
 }
