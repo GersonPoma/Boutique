@@ -11,18 +11,16 @@ import {
   ListItem,
   Chip,
   ListItemText,
-  Tabs,
-  Tab,
+  Divider,
 } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import StopIcon from '@mui/icons-material/Stop';
-import InfoIcon from '@mui/icons-material/Info';
 import {
-  generarReporteProductos,
-  generarReporteVentas,
+  generarReporte
 } from '../../api/reportes';
 // Importamos el tipo de respuesta de Axios
 import type { AxiosResponse } from 'axios';
+import { AutoAwesome } from '@mui/icons-material';
 
 // (Configuración de SpeechRecognition... se mantiene igual)
 const SpeechRecognition =
@@ -35,13 +33,11 @@ if (recognition) {
 }
 
 export const Reportes: React.FC = () => {
-  const [tipoReporte, setTipoReporte] = useState<'productos' | 'ventas'>('productos');
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // ¡CAMBIO! Ya no guardamos datos JSON, sino un mensaje de éxito
   const [success, setSuccess] = useState<string | null>(null);
 
   const recognitionRef = useRef(recognition);
@@ -57,14 +53,7 @@ export const Reportes: React.FC = () => {
       try {
         let response: AxiosResponse<Blob>;
 
-        // Usar el tipo de reporte seleccionado en el tab
-        if (tipoReporte === 'productos') {
-          response = await generarReporteProductos({ text: transcript });
-        } else {
-          response = await generarReporteVentas({ text: transcript });
-        }
-        
-        // --- LÓGICA DE DESCARGA ---
+        response = await generarReporte({ text: transcript });
         
         // 1. Obtener el nombre del archivo del encabezado 'content-disposition'
         const contentDisposition = response.headers['content-disposition'];
@@ -79,10 +68,6 @@ export const Reportes: React.FC = () => {
 
         // 2. Obtener el Content-Type para crear el Blob correctamente
         const contentType = response.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        
-        console.log('📥 Descargando archivo:', filename);
-        console.log('📦 Content-Type:', contentType);
-        console.log('📦 Tamaño del Blob:', response.data.size);
 
         // 3. Crear un enlace (link) temporal en memoria con el tipo MIME correcto
         const blob = new Blob([response.data], { type: contentType });
@@ -124,9 +109,8 @@ export const Reportes: React.FC = () => {
     };
 
     procesarPeticion();
-  }, [transcript, tipoReporte]);
+  }, [transcript]);
 
-  // (La función handleToggleListen... se mantiene igual)
   const handleToggleListen = () => {
     if (!recognitionRef.current) {
       setError(
@@ -158,128 +142,146 @@ export const Reportes: React.FC = () => {
     }
   };
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: 'productos' | 'ventas') => {
-    setTipoReporte(newValue);
-    setTranscript('');
-    setError(null);
-    setSuccess(null);
+  // Ejemplos organizados por categoría
+  const ejemplosReportes = {
+    productos: [
+      "Dame un reporte de los productos más vendidos este mes",
+      "Quiero un reporte en excel de los 10 productos más vendidos de marca nike este mes",
+      "Dame un reporte en pdf de los productos de marca adidas más vendidos del mes pasado",
+      "Quiero ver los 5 productos más vendidos en ventas online este año",
+      "Dame un reporte de las zapatillas nike más vendidas este mes",
+    ],
+    ventas: [
+      "Quiero un reporte en excel de las ventas a crédito de este mes que aún se estén pagando",
+      "Dame un reporte en pdf de las ventas físicas completadas del mes pasado",
+      "Quiero un reporte en excel de las ventas online que superen los 500 bs hace 5 meses",
+      "Dame un reporte de las ventas a crédito completadas este año que superen los 2000 bolivianos",
+      "Dame un reporte en excel de las ventas físicas completadas pagados a crédito del mes pasado",
+    ],
   };
 
-  // Ejemplos según el tipo de reporte
-  const ejemplosProductos = [
-    "Dame un reporte de los productos más vendidos este mes",
-    "Quiero un reporte en excel de los 10 productos más vendidos de marca nike este mes",
-    "Dame un reporte en pdf de los productos de marca adidas más vendidos del mes pasado",
-    "Quiero ver los 5 productos más vendidos en ventas online este año",
-    "Dame un reporte de las zapatillas nike más vendidas este mes",
-    "Quiero un reporte de los productos para hombre de marca puma más vendidos",
-    "Dame los 20 productos más vendidos pagados a crédito este año",
-    "Quiero ver los productos más baratos vendidos este mes",
-    "Dame un reporte de las camisas más vendidas del mes pasado",
-    "Quiero ver los top 10 productos más vendidos en ventas físicas completadas este mes",
-  ];
-
-  const ejemplosVentas = [
-    "Quiero un reporte en excel de las ventas a crédito de este mes que aún se estén pagando",
-    "Dame un reporte en pdf de las ventas físicas completadas del mes pasado",
-    "Quiero un reporte en excel de las ventas online que superen los 500 bs hace 5 meses",
-    "Dame un reporte en pdf de las ventas a contado menores a 1000 dólares del año pasado",
-    "Quiero un reporte de las ventas a crédito completadas este año que superen los 2000 bolivianos",
-    "Dame un reporte de las ventas online pendientes de hace 3 meses que no pasen de 1500 bs",
-    "Dame un reporte en excel de las ventas físicas completadas pagados a crédito del mes pasado",
-  ];
-
-  const ejemplosActuales = tipoReporte === 'productos' ? ejemplosProductos : ejemplosVentas;
-
-  // (El renderizado... se mantiene casi igual)
-  return (
+return (
     <Box sx={{ p: 3, maxWidth: 900, margin: 'auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Reportes por Voz
+      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+        <AutoAwesome sx={{ fontSize: 40, verticalAlign: 'middle', mr: 1 }} />
+        Asistente de Reportes IA
+      </Typography>
+      
+      <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 2 }}>
+        Simplemente dime qué necesitas saber. Yo detectaré si buscas información sobre 
+        <b> productos</b> o <b>ventas</b>.
       </Typography>
 
-      {/* Tabs para seleccionar tipo de reporte */}
-      <Tabs
-        value={tipoReporte}
-        onChange={handleTabChange}
-        centered
-        sx={{ mb: 3 }}
-      >
-        <Tab label="Reportes de Productos" value="productos" />
-        <Tab label="Reportes de Ventas" value="ventas" />
-      </Tabs>
-
       {/* Botón de Micrófono */}
-      <Box sx={{ textAlign: 'center', my: 4 }}>
+      <Box sx={{ textAlign: 'center', my: 5 }}>
         <Button
           variant="contained"
           color={isListening ? 'error' : 'primary'}
           onClick={handleToggleListen}
           disabled={!recognition}
-          sx={{ width: 150, height: 60 }}
-          startIcon={
-            loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : isListening ? (
-              <StopIcon />
-            ) : (
-              <MicIcon />
-            )
-          }
+          sx={{ 
+            width: 200, 
+            height: 200, 
+            borderRadius: '50%',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)' 
+          }}
         >
-          {loading ? 'Procesando...' : isListening ? 'Detener' : 'Escuchar'}
+          {loading ? (
+            <CircularProgress size={60} color="inherit" />
+          ) : isListening ? (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <StopIcon sx={{ fontSize: 60 }} />
+                <Typography variant="button">Detener</Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <MicIcon sx={{ fontSize: 80 }} />
+                <Typography variant="button" sx={{ mt: 1 }}>Presiona para hablar</Typography>
+            </Box>
+          )}
         </Button>
       </Box>
 
-      {/* Ejemplos de uso */}
-      <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f9f9f9' }}>
-        <Typography variant="h6" gutterBottom>
-          <InfoIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
-          Ejemplos de consultas para {tipoReporte === 'productos' ? 'productos' : 'ventas'}
-        </Typography>
-        <List dense>
-          {ejemplosActuales.slice(0, 5).map((ejemplo, index) => (
-            <ListItem key={index}>
-              <Chip 
-                label={`${index + 1}`} 
-                color={tipoReporte === 'productos' ? 'info' : 'success'} 
-                size="small" 
-                sx={{ mr: 2 }} 
-              />
-              <ListItemText 
-                primary={ejemplo} 
-                primaryTypographyProps={{ variant: 'body2' }}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+      {/* Mensajes de Estado */}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {success && !loading && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      {/* Mensaje de Error */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {/* ¡CAMBIO! Mensaje de Éxito de la descarga */}
-      {success && !loading && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
-        </Alert>
-      )}
-
-      {/* Texto Transcrito */}
+      {/* Transcripción en tiempo real */}
       {transcript && !loading && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="overline">Consulta detectada:</Typography>
-          <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
-            "{transcript}"
-          </Typography>
-        </Box>
+        <Paper elevation={3} sx={{ p: 2, mb: 4, textAlign: 'center', bgcolor: '#e3f2fd' }}>
+          <Typography variant="overline" display="block">Interpretando:</Typography>
+          <Typography variant="h6" sx={{ fontStyle: 'italic' }}>"{transcript}"</Typography>
+        </Paper>
       )}
 
-      {/* ¡CAMBIO! Eliminamos la sección que mostraba el JSON */}
+      <Divider sx={{ my: 4 }} />
+
+      {/* Ejemplos de uso por categoría */}
+      <Box>
+        {/* Reportes de Productos */}
+        <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+            Ejemplos de Reportes de Productos
+          </Typography>
+          <List dense>
+            {ejemplosReportes.productos.map((ejemplo, index) => (
+              <ListItem key={index}>
+                <Chip 
+                  label={index + 1}
+                  size="small" 
+                  color="info"
+                  sx={{ mr: 2 }} 
+                />
+                <ListItemText 
+                  primary={ejemplo}
+                  slotProps={{
+                    primary: { 
+                      sx: { variant: 'body2', color: 'text.primary' }
+                    }
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+
+        {/* Reportes de Ventas */}
+        <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+            Ejemplos de Reportes de Ventas
+          </Typography>
+          <List dense>
+            {ejemplosReportes.ventas.map((ejemplo, index) => (
+              <ListItem key={index}>
+                <Chip 
+                  label={index + 1}
+                  size="small" 
+                  color="success"
+                  sx={{ mr: 2 }} 
+                />
+                <ListItemText 
+                  primary={ejemplo}
+                  slotProps={{
+                    primary: { 
+                      sx: { variant: 'body2', color: 'text.primary' }
+                    }
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+
+        {/* Predicción (Próximamente) */}
+        <Paper sx={{ p: 3, backgroundColor: '#fff3e0', borderRadius: 2, border: '2px dashed #ff9800' }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#f57c00' }}>
+            Reportes de Predicción (Próximamente)
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Pronto podrás solicitar predicciones de ventas, demanda de productos y análisis de tendencias con inteligencia artificial.
+          </Typography>
+        </Paper>
+      </Box>
     </Box>
   );
 };
