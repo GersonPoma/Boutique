@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 nlp = spacy.load("es_core_news_md")
 
 # ======================
-# 🔧 FUNCIONES AUXILIARES
+# FUNCIONES AUXILIARES
 # ======================
 
 def detectar_formato(text):
@@ -371,7 +371,7 @@ def detectar_condiciones_venta(text):
 
 
 # ======================
-# 🧠 FUNCIÓN PRINCIPAL
+# FUNCIÓN PRINCIPAL
 # ======================
 
 def analizar_nlp_productos(text):
