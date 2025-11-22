@@ -2,6 +2,7 @@ package com.boutique.service.impl;
 
 import com.boutique.entity.Venta;
 import com.boutique.entity.dto.ProductoVendidoDTO;
+import com.boutique.entity.dto.ProductoVentaMesDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 import com.boutique.repository.ProductoRepository;
@@ -83,6 +84,20 @@ public class ReporteServiceImpl implements ReporteService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProductoVentaMesDto> generarReporteProductosMensual(
+            LocalDate desde, LocalDate hasta
+    ) {
+        // Convertir Enums a String para la query nativa
+        List<Object[]> resultados = productoRepository.findVentasMensuales(
+                desde,
+                hasta
+        );
+        return resultados.stream()
+                .map(this::aDTO)
+                .collect(Collectors.toList());
+    }
+
     private ProductoVendidoDTO mapearADTO(Object[] row) {
         return ProductoVendidoDTO.builder()
                 .productoId(((Number) row[0]).longValue())
@@ -91,6 +106,25 @@ public class ReporteServiceImpl implements ReporteService {
                 .precio((BigDecimal) row[3])
                 .cantidadVendida(((Number) row[4]).intValue())
                 .totalVentas((BigDecimal) row[5])
+                .genero((String) row[6])
+                .tipoPrenda((String) row[7])
+                .talla((String) row[8])
+                .build();
+    }
+
+    private ProductoVentaMesDto aDTO(Object[] row) {
+        return ProductoVentaMesDto.builder()
+                .productoId(((Number) row[0]).longValue())
+                .productoNombre((String) row[1])
+                .marca((String) row[2])
+                .precio((BigDecimal) row[3])
+                .cantidadVendida(((Number) row[4]).intValue())
+                .totalVentas((BigDecimal) row[5])
+                .genero((String) row[6])
+                .tipoPrenda((String) row[7])
+                .talla((String) row[8])
+                .anio(((Number) row[9]).intValue())
+                .mes(((Number) row[10]).intValue())
                 .build();
     }
 }

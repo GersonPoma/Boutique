@@ -1,6 +1,7 @@
 package com.boutique.controller;
 
 import com.boutique.entity.dto.ProductoVendidoDTO;
+import com.boutique.entity.dto.ProductoVentaMesDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 import com.boutique.service.ReporteService;
@@ -70,6 +71,20 @@ public class ReporteController {
                 material, uso, tipoVenta, tipoPago, estadoVenta, ordenarPor, orden, limite
         );
 
+        return ResponseEntity.ok(productos);
+    }
+
+    @GetMapping("/productos-mes")
+    public ResponseEntity<List<ProductoVentaMesDto>> obtenerProductosMes(
+            @RequestParam("desde")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+
+            @RequestParam("hasta")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta
+    ) {
+        List<ProductoVentaMesDto> productos = this.service.generarReporteProductosMensual(
+                desde, hasta
+        );
         return ResponseEntity.ok(productos);
     }
 }

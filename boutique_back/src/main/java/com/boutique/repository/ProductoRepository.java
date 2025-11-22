@@ -48,7 +48,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             p.marca AS marca,
             p.precio AS precio,
             COALESCE(SUM(dv.cantidad), 0) AS cantidadVendida,
-            COALESCE(SUM(dv.sub_total), 0) AS totalVentas
+            COALESCE(SUM(dv.sub_total), 0) AS totalVentas,
+            p.genero AS genero,
+            p.tipo_prenda AS tipoPrenda,
+            p.talla AS talla
         FROM producto p
         INNER JOIN detalle_venta dv ON p.id = dv.producto_id
         INNER JOIN venta v ON dv.venta_id = v.id
@@ -65,7 +68,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
           AND (:tipoVenta IS NULL OR v.tipo_venta = :tipoVenta)
           AND (:tipoPago IS NULL OR v.tipo_pago = :tipoPago)
           AND (:estadoVenta IS NULL OR v.estado = :estadoVenta)
-        GROUP BY p.id, p.nombre, p.marca, p.precio
+        GROUP BY p.id, p.nombre, p.marca, p.precio, p.genero, p.tipo_prenda, p.talla
         ORDER BY
             CASE WHEN :ordenarPor = 'cantidadVendida' AND :orden = 'DESC' THEN SUM(dv.cantidad) END DESC,
             CASE WHEN :ordenarPor = 'cantidadVendida' AND :orden = 'ASC' THEN SUM(dv.cantidad) END ASC,
@@ -92,5 +95,34 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             @Param("ordenarPor") String ordenarPor,
             @Param("orden") String orden,
             @Param("limite") Integer limite
+    );
+
+    @Query(value = """
+        SELECT
+            p.id AS productoId,
+            p.nombre AS productoNombre,
+            p.marca AS marca,
+            p.precio AS precio,
+            COALESCE(SUM(dv.cantidad), 0) AS cantidadVendida,
+            COALESCE(SUM(dv.sub_total), 0) AS totalVentas,
+            p.genero AS genero,
+            p.tipo_prenda AS tipoPrenda,
+            p.talla AS talla,
+            EXTRACT(YEAR FROM v.fecha) AS anio,
+            EXTRACT(MONTH FROM v.fecha) AS mes
+        FROM producto p
+        INNER JOIN detalle_venta dv ON p.id = dv.producto_id
+        INNER JOIN venta v ON dv.venta_id = v.id
+        WHERE v.fecha >= :desde
+          AND v.fecha <= :hasta
+        GROUP BY
+            p.id, p.nombre, p.marca, p.precio, p.genero, p.tipo_prenda, p.talla,
+            EXTRACT(YEAR FROM v.fecha), EXTRACT(MONTH FROM v.fecha)
+        ORDER BY
+            p.id, anio, mes
+    """, nativeQuery = true)
+    List<Object[]> findVentasMensuales(
+            @Param("desde") LocalDate desde,
+            @Param("hasta") LocalDate hasta
     );
 }

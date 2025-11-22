@@ -1,6 +1,7 @@
 package com.boutique.service;
 
 import com.boutique.entity.dto.ProductoVendidoDTO;
+import com.boutique.entity.dto.ProductoVentaMesDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 
@@ -35,5 +36,10 @@ public interface ReporteService {
             String ordenarPor,
             String orden,
             Integer limite
+    );
+
+    List<ProductoVentaMesDto> generarReporteProductosMensual(
+            LocalDate desde,
+            LocalDate hasta
     );
 }

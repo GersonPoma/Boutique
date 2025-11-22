@@ -15,14 +15,18 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductoVendidoDTO {
+public class ProductoVentaMesDto {
     private Long productoId;
     private String productoNombre;
     private String marca;
     private BigDecimal precio;
     private Integer cantidadVendida;
     private BigDecimal totalVentas;
+
     private String genero;
     private String tipoPrenda;
     private String talla;
+
+    private Integer anio;
+    private Integer mes;
 }
