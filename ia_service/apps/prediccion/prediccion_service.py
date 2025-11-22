@@ -11,13 +11,15 @@ from apps.prediccion.data_service import obtener_datos_para_prediccion
 logger = logging.getLogger(__name__)
 
 
-def generar_prediccion(filtros=None, top_n=20):
+def generar_prediccion(filtros=None, top_n=20, fecha_inicio_prediccion=None, fecha_fin_prediccion=None):
     """
-    Genera predicción de productos más vendidos para el próximo período
+    Genera predicción de productos más vendidos para un período futuro
 
     Args:
         filtros: Diccionario con filtros opcionales (marca, genero, etc.)
         top_n: Número de productos top a retornar
+        fecha_inicio_prediccion: Fecha inicial del periodo FUTURO a predecir
+        fecha_fin_prediccion: Fecha final del periodo FUTURO a predecir
 
     Returns:
         Lista de diccionarios con predicciones
@@ -25,6 +27,9 @@ def generar_prediccion(filtros=None, top_n=20):
     logger.info("=" * 70)
     logger.info("GENERANDO PREDICCIÓN DE PRODUCTOS MÁS VENDIDOS")
     logger.info("=" * 70)
+
+    if fecha_inicio_prediccion and fecha_fin_prediccion:
+        logger.info(f"📅 Periodo de predicción: {fecha_inicio_prediccion} → {fecha_fin_prediccion}")
 
     try:
         # 1. Cargar el modelo entrenado
@@ -40,9 +45,13 @@ def generar_prediccion(filtros=None, top_n=20):
         model = ProductSalesPredictionModel()
         model.load(model_dir=model_dir)
 
-        # 2. Obtener datos actuales de productos
+        # 2. Obtener datos actuales de productos con información de la temporada futura
         logger.info("Obteniendo datos de productos...")
-        df_productos = obtener_datos_para_prediccion(filtros=filtros)
+        df_productos = obtener_datos_para_prediccion(
+            filtros=filtros,
+            fecha_inicio_prediccion=fecha_inicio_prediccion,
+            fecha_fin_prediccion=fecha_fin_prediccion
+        )
 
         if len(df_productos) == 0:
             logger.warning("No se encontraron productos con los filtros especificados")
