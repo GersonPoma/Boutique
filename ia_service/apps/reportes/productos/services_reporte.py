@@ -12,7 +12,7 @@ from django.http import FileResponse
 
 # URL del servicio de negocio
 NEGOCIO_API_URL = "http://localhost:8081/api/reporte/productos"
-
+# NEGOCIO_API_URL = "http://boutique-back:8081/api/reporte/productos"
 
 def generar_reporte_productos(parametros):
     """

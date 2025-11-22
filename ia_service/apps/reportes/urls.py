@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import NLPAnalyzeView, NLPAnalyzeProductosView
+from .views import ReporteView
 
 urlpatterns = [
-    path('ventas/', NLPAnalyzeView.as_view(), name='nlp-analyze-ventas'),
-    path('productos/', NLPAnalyzeProductosView.as_view(), name='nlp-analyze-productos'),
+    path('generar/', ReporteView.as_view(), name='generar-reporte'),
 ]

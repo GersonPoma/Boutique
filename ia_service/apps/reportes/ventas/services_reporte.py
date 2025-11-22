@@ -8,6 +8,7 @@ from django.http import FileResponse
 
 # Cambia esto por la URL real de tu servicio de negocio
 NEGOCIO_API_URL = "http://localhost:8081/api/reporte/ventas"
+# NEGOCIO_API_URL = "http://boutique-back:8081/api/reporte/ventas"
 
 
 def generar_reporte_ventas(parametros):

@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 nlp = spacy.load("es_core_news_md")
 
 # ======================
-# 🔧 FUNCIONES AUXILIARES
+# FUNCIONES AUXILIARES
 # ======================
 
 def detectar_formato(text):
@@ -53,10 +53,10 @@ def detectar_rango_tiempo(text):
             # Capturar "un" o "una" como 1
             cantidad = m_anio.group(0)
             if "un " in cantidad or "una " in cantidad:
-                años = 1
+                anios = 1
             else:
-                años = int(re.search(r"\d+", cantidad).group())
-            inicio = hoy - relativedelta(years=años)
+                anios = int(re.search(r"\d+", cantidad).group())
+            inicio = hoy - relativedelta(years=anios)
             return inicio, hoy
 
     # Por defecto: mes actual (desde el día 1 hasta hoy)
@@ -66,31 +66,98 @@ def detectar_rango_tiempo(text):
 def detectar_condiciones_enums(text):
     condiciones = {}
 
-    # 🔹 Tipo de pago
+    # Tipo de pago
     if "crédito" in text or "credito" in text:
         condiciones["tipoPago"] = "CREDITO"
     elif "contado" in text:
         condiciones["tipoPago"] = "CONTADO"
 
-    # 🔹 Tipo de venta
+    # Tipo de venta
     if "física" in text or "fisica" in text:
         condiciones["tipoVenta"] = "FISICA"
     elif "online" in text or "virtual" in text or "web" in text:
         condiciones["tipoVenta"] = "ONLINE"
 
-    # 🔹 Estado
-    if "pendiente" in text:
+    # Estado
+    if es_pendiente(text):
         condiciones["estado"] = "PENDIENTE"
-    elif "completad" in text or "finalizad" in text:
+    elif es_completada(text):
         condiciones["estado"] = "COMPLETADA"
-    elif "cancelad" in text:
+    elif es_cancelada(text):
         condiciones["estado"] = "CANCELADA"
-    elif "proceso" in text:
+    elif es_en_proceso(text):
         condiciones["estado"] = "EN_PROCESO"
-    elif "pagando" in text or "se estén pagando" in text or "pagándose" in text:
+    elif es_pagando_credito(text):
         condiciones["estado"] = "PAGANDO_CREDITO"
 
     return condiciones
+
+def es_pendiente(text):
+    patrones = [
+        r"pendiente",
+        r"en espera",
+        r"por completar",
+        r"sin completar",
+        r"pendientes"
+    ]
+    for patron in patrones:
+        if re.search(patron, text):
+            return True
+    return False
+
+def es_completada(text):
+    patrones = [
+        r"completada",
+        r"finalizada",
+        r"terminada",
+        r"completadas",
+        r"finalizadas"
+    ]
+    for patron in patrones:
+        if re.search(patron, text):
+            return True
+    return False
+
+def es_cancelada(text):
+    patrones = [
+        r"cancelada",
+        r"anulada",
+        r"canceladas",
+        r"anuladas"
+    ]
+    for patron in patrones:
+        if re.search(patron, text):
+            return True
+    return False
+
+def es_en_proceso(text):
+    patrones = [
+        r"en proceso",
+        r"procesándose",
+        r"procesandose",
+        r"procesando",
+        r"en curso",
+        r"en procesos",
+        r"procesos",
+        r"en cursos"
+    ]
+    for patron in patrones:
+        if re.search(patron, text):
+            return True
+    return False
+
+def es_pagando_credito(text):
+    patrones = [
+        r"pagando crédito",
+        r"pagando credito",
+        r"se estén pagando",
+        r"pagándose",
+        r"pagandose"
+    ]
+    for patron in patrones:
+        if re.search(patron, text):
+            return True
+    return False
 
 def detectar_condicion_monto(text):
     condicion = {}

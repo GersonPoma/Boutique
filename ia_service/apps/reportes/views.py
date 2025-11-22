@@ -1,8 +1,11 @@
+from requests import RequestException
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiExample
+
+from .nlp_router import detectar_intencion
 from .serializers import TextInputSerializer
 from apps.reportes.ventas.services import analizar_nlp
 from apps.reportes.ventas.services_reporte import generar_reporte_ventas
@@ -11,22 +14,24 @@ from apps.reportes.productos.services_reporte import generar_reporte_productos
 import requests
 
 
-class NLPAnalyzeView(APIView):
-    authentication_classes = []  # Deshabilitar autenticación JWT
+class ReporteView(APIView):
+    authentication_classes = []
     permission_classes = [AllowAny]
+
     @extend_schema(
-        summary="Analiza texto en lenguaje natural y genera reporte",
-        description="Recibe texto en lenguaje natural (o voz convertida a texto), lo analiza y genera un reporte de ventas en el formato solicitado (Excel o PDF).",
+        summary="Generador inteligente de reportes",
+        description="Detecta automáticamente si la consulta es sobre ventas o productos y genera el archivo "
+                    "correspondiente.",
         request=TextInputSerializer,
         responses={
             200: OpenApiExample(
-                'Archivo de reporte generado',
-                value="Archivo Excel o PDF",
+                'Archivo generado',
+                value="Archivo binario (Excel o PDF)",
                 response_only=True
             ),
-            400: {"error": "Parámetros inválidos o datos insuficientes"}
+            400: {"error": "Error de validación o parámetros faltantes"}
         },
-        tags=["NLP"],
+        tags=["NLP Reports"],
     )
     def post(self, request):
         # Validar el serializer
@@ -39,33 +44,17 @@ class NLPAnalyzeView(APIView):
 
         text = serializer.validated_data.get("text", "").strip()
 
-        # Validar que el texto no esté vacío
-        if not text:
-            return Response(
-                {"error": "El campo 'text' no puede estar vacío"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         try:
-            # Analizar el texto con NLP
-            query = analizar_nlp(text)
+            intencion = detectar_intencion(text)
 
-            # Validar que se hayan detectado los datos mínimos necesarios
-            if not query.get("rango"):
-                return Response(
-                    {"error": "No se pudo detectar un rango de fechas en el texto"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            if intencion == "ventas":
+                return self._procesar_reporte_ventas(text)
+            else:
+                return self._procesar_reporte_productos(text)
 
-            # Generar el reporte
-            result = generar_reporte_ventas(query)
-
-            # FileResponse ya tiene el formato correcto, devolverlo directamente
-            return result
-
-        except requests.exceptions.RequestException as e:
+        except RequestException as e:
             return Response(
-                {"error": "Error al conectar con el servicio de negocio", "detalles": str(e)},
+                {"error": "Error al conectar con el servicio de negocio", "\nDetalles": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
         except ValueError as e:
@@ -79,73 +68,26 @@ class NLPAnalyzeView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    def _procesar_reporte_ventas(self, text):
+        query = analizar_nlp(text)
 
-class NLPAnalyzeProductosView(APIView):
-    authentication_classes = []  # Deshabilitar autenticación JWT
-    permission_classes = [AllowAny]
-
-    @extend_schema(
-        summary="Analiza texto en lenguaje natural y genera reporte de productos",
-        description="Recibe texto en lenguaje natural para generar reportes de productos más vendidos, con filtros por marca, género, tipo de prenda, etc. Combina datos de Venta, DetalleVenta y Producto.",
-        request=TextInputSerializer,
-        responses={
-            200: OpenApiExample(
-                'Archivo de reporte generado',
-                value="Archivo Excel o PDF",
-                response_only=True
-            ),
-            400: {"error": "Parámetros inválidos o datos insuficientes"}
-        },
-        tags=["NLP"],
-    )
-    def post(self, request):
-        # Validar el serializer
-        serializer = TextInputSerializer(data=request.data)
-        if not serializer.is_valid():
+        if not query.get("rango"):
             return Response(
-                {"error": "Datos inválidos", "detalles": serializer.errors},
+                {"error": "No se pudo detectar un rango de fechas en el texto"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        text = serializer.validated_data.get("text", "").strip()
+        result = generar_reporte_ventas(query)
+        return result
 
-        # Validar que el texto no esté vacío
-        if not text:
+    def _procesar_reporte_productos(self, text):
+        query = analizar_nlp_productos(text)
+
+        if not query.get("rango"):
             return Response(
-                {"error": "El campo 'text' no puede estar vacío"},
+                {"error": "No se pudo detectar un rango de fechas en el texto"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        try:
-            # Analizar el texto con NLP
-            query = analizar_nlp_productos(text)
-
-            # Validar que se hayan detectado los datos mínimos necesarios
-            if not query.get("rango"):
-                return Response(
-                    {"error": "No se pudo detectar un rango de fechas en el texto"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            # Generar el reporte
-            result = generar_reporte_productos(query)
-
-            # FileResponse ya tiene el formato correcto, devolverlo directamente
-            return result
-
-        except requests.exceptions.RequestException as e:
-            return Response(
-                {"error": "Error al conectar con el servicio de negocio", "detalles": str(e)},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE
-            )
-        except ValueError as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        except Exception as e:
-            return Response(
-                {"error": "Error interno al procesar la solicitud", "detalles": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
+        result = generar_reporte_productos(query)
+        return result
