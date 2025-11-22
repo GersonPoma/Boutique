@@ -26,4 +26,5 @@ urlpatterns = [
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
     path('ia/reportes/', include('apps.reportes.urls')),
+    path('ia/', include('apps.prediccion.urls')),
 ]
