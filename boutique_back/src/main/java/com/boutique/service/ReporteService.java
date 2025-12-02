@@ -2,6 +2,7 @@ package com.boutique.service;
 
 import com.boutique.entity.dto.ProductoVendidoDTO;
 import com.boutique.entity.dto.ProductoVentaMesDto;
+import com.boutique.entity.dto.VentaEstadisticaDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 
@@ -42,4 +43,6 @@ public interface ReporteService {
             LocalDate desde,
             LocalDate hasta
     );
+
+    List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales();
 }

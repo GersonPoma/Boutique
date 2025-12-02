@@ -3,6 +3,7 @@ package com.boutique.service.impl;
 import com.boutique.entity.Venta;
 import com.boutique.entity.dto.ProductoVendidoDTO;
 import com.boutique.entity.dto.ProductoVentaMesDto;
+import com.boutique.entity.dto.VentaEstadisticaDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 import com.boutique.repository.ProductoRepository;
@@ -96,6 +97,12 @@ public class ReporteServiceImpl implements ReporteService {
         return resultados.stream()
                 .map(this::aDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales() {
+        LocalDate fechaLimite = LocalDate.now().minusMonths(12).withDayOfMonth(1);
+        return this.ventaRepository.contarVentasPorMes(fechaLimite);
     }
 
     private ProductoVendidoDTO mapearADTO(Object[] row) {
