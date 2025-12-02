@@ -23,6 +23,7 @@ public class InventarioDto {
     private Long idProducto;
     private String nombreSucursal;
     private String nombreProducto;
+    private String imagenUrl;
 
     public static InventarioDto toDto(Inventario inventario) {
         return InventarioDto.builder()
@@ -32,6 +33,7 @@ public class InventarioDto {
                 .idProducto(inventario.getProducto().getId())
                 .nombreSucursal(inventario.getSucursal().getNombre())
                 .nombreProducto(inventario.getProducto().getNombre())
+                .imagenUrl(inventario.getProducto().getImagenUrl())
                 .build();
     }
 
