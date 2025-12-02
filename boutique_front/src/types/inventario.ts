@@ -5,4 +5,5 @@ export interface Inventario {
     idProducto: number;
     nombreSucursal: string | null;
     nombreProducto: string | null;
+    imagenUrl: string | null;
 }

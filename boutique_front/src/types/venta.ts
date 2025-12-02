@@ -55,4 +55,5 @@ export interface DetalleVenta {
     idVenta: number | null;
     idProducto: number;
     nombreProducto: string | null;
+    imagenUrl: string | null;
 }

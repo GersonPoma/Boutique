@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { getVentaById } from "../../api/ventas";
 import type { VerDetallesVenta } from "../../types/venta";
+import sinImagen from "../../assets/sin-imagen.png";
 
 interface Props {
   open: boolean;
@@ -110,6 +111,7 @@ export const ModalDetalleVenta = ({ open, onClose, ventaId }: Props) => {
                 <Table size="small" sx={{ mt: 1 }}>
                   <TableHead>
                     <TableRow>
+                      <TableCell>Imagen</TableCell>
                       <TableCell>Producto</TableCell>
                       <TableCell>Cantidad</TableCell>
                       <TableCell>Precio Unitario</TableCell>
@@ -119,6 +121,19 @@ export const ModalDetalleVenta = ({ open, onClose, ventaId }: Props) => {
                   <TableBody>
                     {venta.detalles.map((d) => (
                       <TableRow key={d.id}>
+                        <TableCell>
+                          <Box
+                            component="img"
+                            src={d.imagenUrl || sinImagen}
+                            alt={d.nombreProducto || "Producto"}
+                            sx={{
+                              width: 60,
+                              height: 60,
+                              objectFit: "cover",
+                              borderRadius: 1,
+                            }}
+                          />
+                        </TableCell>
                         <TableCell>{d.nombreProducto}</TableCell>
                         <TableCell>{d.cantidad}</TableCell>
                         <TableCell>${d.precioUnitario.toFixed(2)}</TableCell>

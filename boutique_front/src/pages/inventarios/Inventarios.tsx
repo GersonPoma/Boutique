@@ -6,6 +6,7 @@ import {
   TextField,
   MenuItem
 } from '@mui/material';
+import sinImagen from '../../assets/sin-imagen.png';
 import EditIcon from '@mui/icons-material/Edit';
 import BlockIcon from '@mui/icons-material/Block';
 import AddIcon from '@mui/icons-material/Add';
@@ -34,6 +35,8 @@ export const Inventarios = () => {
 
   const esAdmin = user?.rol === 'ADMIN';
   const esInventarista = user?.rol === 'INVENTARISTA';
+
+  const cantidadColumnas = (esAdmin || esInventarista) ? 6 : 5;
 
   // Cargar sucursales si es admin  
   useEffect(() => {
@@ -203,6 +206,7 @@ export const Inventarios = () => {
         <TableHead>
           <TableRow>
             <TableCell align="center">ID</TableCell>
+            <TableCell align="center">Imagen</TableCell>
             <TableCell align="center">Producto</TableCell>
             <TableCell align="center">Stock</TableCell>
             <TableCell align="center">Sucursal</TableCell>
@@ -215,6 +219,19 @@ export const Inventarios = () => {
           {usuarios.map((i) => (
             <TableRow key={i.id}>
               <TableCell align="center">{i.id}</TableCell>
+              <TableCell align="center">
+                <Box
+                  component="img"
+                  src={i.imagenUrl || sinImagen}
+                  alt={i.nombreProducto || "Producto"}
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    objectFit: "cover",
+                    borderRadius: 1,
+                  }}
+                />
+              </TableCell>
               <TableCell>{i.nombreProducto}</TableCell>
               <TableCell align="center">{i.cantidad}</TableCell>
               <TableCell align="center">{i.nombreSucursal}</TableCell>
@@ -240,7 +257,7 @@ export const Inventarios = () => {
 
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={5} align="center">
+            <TableCell colSpan={cantidadColumnas} align="center">
               <Box
                 display="flex"
                 justifyContent="center"
