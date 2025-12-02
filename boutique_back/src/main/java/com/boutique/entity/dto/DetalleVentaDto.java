@@ -33,6 +33,8 @@ public class DetalleVentaDto {
     private Long idProducto;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String nombreProducto;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String imagenUrl;
 
     public static DetalleVentaDto toDto(DetalleVenta detalleVenta) {
         return DetalleVentaDto.builder()
@@ -43,6 +45,7 @@ public class DetalleVentaDto {
                 .idVenta(detalleVenta.getVenta().getId())
                 .idProducto(detalleVenta.getProducto().getId())
                 .nombreProducto(detalleVenta.getProducto().getNombre())
+                .imagenUrl(detalleVenta.getProducto().getImagenUrl())
                 .build();
     }
 

@@ -22,6 +22,7 @@ public class ProductoDto {
     private String nombre;
     private String descripcion;
     private BigDecimal precio;
+    private String imagenUrl;
     private Marca marca;
     private Genero genero;
     private TipoPrenda tipoPrenda;
@@ -36,6 +37,7 @@ public class ProductoDto {
                 .id(producto.getId())
                 .nombre(producto.getNombre())
                 .descripcion(producto.getDescripcion())
+                .imagenUrl(producto.getImagenUrl())
                 .precio(producto.getPrecio())
                 .marca(producto.getMarca())
                 .genero(producto.getGenero())
@@ -54,6 +56,7 @@ public class ProductoDto {
                 .nombre(producto.getNombre())
                 .descripcion(producto.getDescripcion())
                 .precio(producto.getPrecio())
+                .imagenUrl(producto.getImagenUrl())
                 .marca(producto.getMarca())
                 .genero(producto.getGenero())
                 .tipoPrenda(producto.getTipoPrenda())
