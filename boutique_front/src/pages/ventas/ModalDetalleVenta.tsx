@@ -127,8 +127,8 @@ export const ModalDetalleVenta = ({ open, onClose, ventaId }: Props) => {
                             src={d.imagenUrl || sinImagen}
                             alt={d.nombreProducto || "Producto"}
                             sx={{
-                              width: 60,
-                              height: 60,
+                              width: 80,
+                              height: 80,
                               objectFit: "cover",
                               borderRadius: 1,
                             }}
