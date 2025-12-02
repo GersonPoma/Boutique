@@ -225,8 +225,8 @@ export const Inventarios = () => {
                   src={i.imagenUrl || sinImagen}
                   alt={i.nombreProducto || "Producto"}
                   sx={{
-                    width: 50,
-                    height: 50,
+                    width: 80,
+                    height: 80,
                     objectFit: "cover",
                     borderRadius: 1,
                   }}
