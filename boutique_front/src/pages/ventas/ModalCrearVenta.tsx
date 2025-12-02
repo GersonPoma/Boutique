@@ -232,6 +232,18 @@ export const ModalCrearVenta = ({ open, onClose, onGuardado }: any) => {
     }
   };
 
+  const handleCancelarVenta = () => {
+    // Reset form
+    setCi("");
+    setCliente(null);
+    setDetalles([]);
+    setTotal(0);
+    setTipoPago(TipoPago.CONTADO);
+    setIdPlanCredito(null);
+    setObservaciones("Sin observaciones.");
+    if (esAdmin) setIdSucursal(null);
+  };
+
   const handleRegistrarCliente = async () => {
     if (!ci || !nuevoCliente) {
       setErrorCliente("Debe ingresar CI y datos del nuevo cliente.");
@@ -445,7 +457,7 @@ export const ModalCrearVenta = ({ open, onClose, onGuardado }: any) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancelar</Button>
+          <Button onClick={() => { onClose(); handleCancelarVenta(); }}>Cancelar</Button>
           <Button
             variant="contained"
             onClick={handleGuardar}
