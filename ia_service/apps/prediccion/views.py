@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -25,6 +26,8 @@ def _parse_date_param(val, default):
 
 
 class PrediccionApiView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
     @extend_schema(
         summary="Generar predicción de productos más vendidos para un periodo futuro",
         description=(
