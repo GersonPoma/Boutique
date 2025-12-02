@@ -1,6 +1,7 @@
 package com.boutique.repository;
 
 import com.boutique.entity.Venta;
+import com.boutique.entity.dto.VentaEstadisticaDto;
 import com.boutique.entity.enums.EstadoVenta;
 import com.boutique.entity.enums.TipoPago;
 import com.boutique.entity.enums.TipoVenta;
@@ -47,4 +48,16 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             BigDecimal montoMaximo,
             TipoVenta tipoVenta
     );
+
+    @Query("""
+        SELECT 
+            YEAR(v.fecha) as anio, 
+            MONTH(v.fecha) as mes, 
+            COUNT(v) as totalVentas
+        FROM Venta v
+        WHERE v.fecha >= :fechaLimite
+        GROUP BY YEAR(v.fecha), MONTH(v.fecha)
+        ORDER BY YEAR(v.fecha) ASC, MONTH(v.fecha) ASC
+    """)
+    List<VentaEstadisticaDto> contarVentasPorMes(LocalDate fechaLimite);
 }
