@@ -232,7 +232,7 @@ export const Inventarios = () => {
                   }}
                 />
               </TableCell>
-              <TableCell>{i.nombreProducto}</TableCell>
+              <TableCell align="center">{i.nombreProducto}</TableCell>
               <TableCell align="center">{i.cantidad}</TableCell>
               <TableCell align="center">{i.nombreSucursal}</TableCell>
               {(esAdmin || esInventarista) && (
