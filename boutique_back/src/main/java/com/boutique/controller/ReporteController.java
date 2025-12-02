@@ -2,6 +2,7 @@ package com.boutique.controller;
 
 import com.boutique.entity.dto.ProductoVendidoDTO;
 import com.boutique.entity.dto.ProductoVentaMesDto;
+import com.boutique.entity.dto.VentaEstadisticaDto;
 import com.boutique.entity.dto.VentaSimpleDto;
 import com.boutique.entity.enums.*;
 import com.boutique.service.ReporteService;
@@ -86,5 +87,10 @@ public class ReporteController {
                 desde, hasta
         );
         return ResponseEntity.ok(productos);
+    }
+
+    @GetMapping("/estadisticas-ventas-mensuales")
+    public ResponseEntity<List<VentaEstadisticaDto>> obtenerEstadisticasVentasMensuales() {
+        return ResponseEntity.ok(this.service.obtenerEstadisticasVentasMensuales());
     }
 }
