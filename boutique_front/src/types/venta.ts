@@ -57,3 +57,9 @@ export interface DetalleVenta {
     nombreProducto: string | null;
     imagenUrl: string | null;
 }
+
+export interface EstadisticasVentas {
+    totalVentas: number;
+    mes: number,
+    anio: number,
+}

@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 import { Prediccion } from './Prediccion';
+import { EstadisticaVentas } from './EstadisticaVentas';
 export const Dashboard = () => (
   <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
     <Box sx={{ my: 4 }}>
@@ -7,6 +8,8 @@ export const Dashboard = () => (
         Bienvenido al Dashboard
         </Typography>
     </Box>
+
+    <EstadisticaVentas />
 
     <Prediccion />
   </Container>
