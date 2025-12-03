@@ -165,7 +165,7 @@ export const Prediccion = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ mb: 4 }}>
       <Typography variant="h4" gutterBottom>
         Predicción de Demanda
       </Typography>

@@ -82,7 +82,7 @@ export const EstadisticaVentas = () => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+      <Typography variant="h4" gutterBottom>
         Evolución de Ventas (Últimos 13 meses)
       </Typography>
 
