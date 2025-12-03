@@ -56,8 +56,9 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             COUNT(v) as totalVentas
         FROM Venta v
         WHERE v.fecha >= :fechaLimite
+        AND (:idSucursal IS NULL OR v.sucursal.id = :idSucursal)
         GROUP BY YEAR(v.fecha), MONTH(v.fecha)
         ORDER BY YEAR(v.fecha) ASC, MONTH(v.fecha) ASC
     """)
-    List<VentaEstadisticaDto> contarVentasPorMes(LocalDate fechaLimite);
+    List<VentaEstadisticaDto> contarVentasPorMes(LocalDate fechaLimite, Long idSucursal);
 }

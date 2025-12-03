@@ -90,7 +90,9 @@ public class ReporteController {
     }
 
     @GetMapping("/estadisticas-ventas-mensuales")
-    public ResponseEntity<List<VentaEstadisticaDto>> obtenerEstadisticasVentasMensuales() {
-        return ResponseEntity.ok(this.service.obtenerEstadisticasVentasMensuales());
+    public ResponseEntity<List<VentaEstadisticaDto>> obtenerEstadisticasVentasMensuales(
+            @RequestParam(required = false) Long idSucursal
+    ) {
+        return ResponseEntity.ok(this.service.obtenerEstadisticasVentasMensuales(idSucursal));
     }
 }

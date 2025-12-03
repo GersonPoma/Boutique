@@ -100,9 +100,9 @@ public class ReporteServiceImpl implements ReporteService {
     }
 
     @Override
-    public List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales() {
+    public List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales(Long idSucursal) {
         LocalDate fechaLimite = LocalDate.now().minusMonths(12).withDayOfMonth(1);
-        return this.ventaRepository.contarVentasPorMes(fechaLimite);
+        return this.ventaRepository.contarVentasPorMes(fechaLimite, idSucursal);
     }
 
     private ProductoVendidoDTO mapearADTO(Object[] row) {

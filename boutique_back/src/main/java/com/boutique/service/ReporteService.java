@@ -44,5 +44,5 @@ public interface ReporteService {
             LocalDate hasta
     );
 
-    List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales();
+    List<VentaEstadisticaDto> obtenerEstadisticasVentasMensuales(Long idSucursal);
 }
