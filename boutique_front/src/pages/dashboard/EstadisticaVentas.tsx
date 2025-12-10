@@ -14,7 +14,9 @@ import {
   TableRow,
   Card,
   CardContent,
-  Divider
+  Divider,
+  TextField,
+  MenuItem
 } from '@mui/material';
 import {
   BarChart,
@@ -27,26 +29,57 @@ import {
 } from 'recharts';
 import type { EstadisticasVentas } from '../../types/venta';
 import { estadisticaVentas } from '../../api/reportes';
+import type { Sucursal } from '../../types/sucursal';
+import { getSucursales } from '../../api/sucursales';
+import { useAuth } from '../../context/AuthContext';
 
 export const EstadisticaVentas = () => {
+  const { user } = useAuth();
+
   const [data, setData] = useState<EstadisticasVentas[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchEstadisticas();
-  }, []);
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState<number | ''>('');
+  const [errorSucursales, setErrorSucursales] = useState<string | null>(null);
 
-  const fetchEstadisticas = async () => {
+  const esAdmin = user?.rol === 'ADMIN';
+
+  useEffect(() => {
+    if (esAdmin) {
+      fetchSucursales();
+    }
+  }, [esAdmin]);
+
+  useEffect(() => {
+    if (esAdmin) {
+      fetchEstadisticas(sucursalSeleccionada === '' ? undefined : sucursalSeleccionada);
+    } else if (user?.id_sucursal) {
+      fetchEstadisticas(user.id_sucursal);
+    }
+  }, [esAdmin, sucursalSeleccionada, user?.id_sucursal]);
+
+  const fetchEstadisticas = async (idSucursal: number | undefined) => {
     try {
       setLoading(true);
-      const response = await estadisticaVentas();
+      const response = await estadisticaVentas(idSucursal);
       setData(response);
     } catch (err) {
       console.error(err);
       setError('Error al cargar las estadísticas de ventas');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSucursales = async () => {
+    try {
+      const data = await getSucursales();
+      setSucursales(data);
+    } catch (err) {
+      console.error('Error al obtener sucursales:', err);
+      setErrorSucursales('Error al cargar las sucursales');
     }
   };
 
@@ -77,6 +110,17 @@ export const EstadisticaVentas = () => {
     return null;
   };
 
+  const handleSucursalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    if (value === '') {
+      setSucursalSeleccionada('');
+      return;
+    }
+
+    setSucursalSeleccionada(Number(value));
+  };
+
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
   if (error) return <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>;
 
@@ -85,6 +129,27 @@ export const EstadisticaVentas = () => {
       <Typography variant="h4" gutterBottom>
         Evolución de Ventas (Últimos 13 meses)
       </Typography>
+
+      {/* Filtro de sucursal solo para admin */}
+      {(esAdmin) && (
+        <Box mb={2}>
+          <TextField
+            select
+            label="Filtrar por sucursal"
+            value={sucursalSeleccionada}
+            onChange={handleSucursalChange}
+            size="small"
+            sx={{ width: { xs: '100%', sm: 280 } }}
+          >
+            <MenuItem value="">Seleccionar sucursal</MenuItem>
+            {sucursales.map((s) => (
+              <MenuItem key={s.id!} value={s.id!}>
+                {s.nombre}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+      )}
 
       <Grid container spacing={3}>
         {/* --- Sección Gráfico --- */}

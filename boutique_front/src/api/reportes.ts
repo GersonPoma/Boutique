@@ -11,6 +11,8 @@ export const generarReporte = (data: ReporteRequest): Promise<AxiosResponse<Blob
   });
 }
 
-export const estadisticaVentas = () => {
-  return apiClient.get<EstadisticasVentas[]>('/api/reporte/estadisticas-ventas-mensuales');
+export const estadisticaVentas = (idSucursal: number | undefined) => {
+  return apiClient.get<EstadisticasVentas[]>('/api/reporte/estadisticas-ventas-mensuales', {
+    params: { idSucursal }
+  });
 }
