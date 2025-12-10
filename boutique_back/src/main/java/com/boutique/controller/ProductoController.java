@@ -1,9 +1,14 @@
 package com.boutique.controller;
 
+import com.boutique.entity.dto.PaginacionDto;
 import com.boutique.entity.dto.ProductoDto;
 import com.boutique.entity.enums.*;
 import com.boutique.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +27,17 @@ public class ProductoController {
     private ProductoService service;
 
     @GetMapping
-    public ResponseEntity<List<ProductoDto>> listarProductos() {
-        List<ProductoDto> productos = service.listarProductos();
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<PaginacionDto<ProductoDto>> listarProductos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir
+    ) {
+        Sort.Direction sortDirection = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        Page<ProductoDto> productos = service.listarProductos(pageable);
+        return ResponseEntity.ok(PaginacionDto.fromPage(productos));
     }
 
     @GetMapping("/obtener-nombre/{id}")
@@ -36,18 +49,25 @@ public class ProductoController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<ProductoDto>> buscarProductos(
+    public ResponseEntity<PaginacionDto<ProductoDto>> buscarProductos(
             @RequestParam(name = "marca", required = false) Marca marca,
             @RequestParam(name = "genero", required = false) Genero genero,
             @RequestParam(name = "tipoPrenda", required = false) TipoPrenda tipoPrenda,
             @RequestParam(name = "talla", required = false) Talla talla,
             @RequestParam(name = "temporada", required = false) Temporada temporada,
-            @RequestParam(name = "uso", required = false) Uso uso
+            @RequestParam(name = "uso", required = false) Uso uso,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir
     ) {
-        List<ProductoDto> productos = service.buscarProductos(
-                marca, genero, tipoPrenda, talla, temporada, uso
+        Sort.Direction sortDirection = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        Page<ProductoDto> productos = service.buscarProductos(
+                marca, genero, tipoPrenda, talla, temporada, uso, pageable
         );
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(PaginacionDto.fromPage(productos));
     }
 
     @PostMapping

@@ -2,6 +2,8 @@ package com.boutique.repository;
 
 import com.boutique.entity.Producto;
 import com.boutique.entity.enums.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,13 +26,14 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
           AND (:temporada IS NULL OR p.temporada = :temporada)
           AND (:uso IS NULL OR p.uso = :uso)
     """)
-    List<Producto> buscar(
+    Page<Producto> buscar(
             @Param("marca") @Nullable Marca marca,
             @Param("genero") @Nullable Genero genero,
             @Param("tipoPrenda") @Nullable TipoPrenda tipoPrenda,
             @Param("talla") @Nullable Talla talla,
             @Param("temporada") @Nullable Temporada temporada,
-            @Param("uso") @Nullable Uso uso
+            @Param("uso") @Nullable Uso uso,
+            @Param("pageable") Pageable pageable
     );
 
 

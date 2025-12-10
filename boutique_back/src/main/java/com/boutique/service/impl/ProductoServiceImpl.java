@@ -6,6 +6,8 @@ import com.boutique.entity.enums.*;
 import com.boutique.repository.ProductoRepository;
 import com.boutique.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,9 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductoDto> listarProductos() {
-        return this.repository.findAll().stream()
-                .map(ProductoDto::toDto)
-                .collect(Collectors.toList());
+    public Page<ProductoDto> listarProductos(Pageable pageable) {
+        return this.repository.findAll(pageable)
+                .map(ProductoDto::toDto);
     }
 
     @Override
@@ -42,16 +43,14 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductoDto> buscarProductos(
+    public Page<ProductoDto> buscarProductos(
             Marca marca, Genero genero, TipoPrenda tipoPrenda,
-            Talla talla, Temporada temporada, Uso uso
+            Talla talla, Temporada temporada, Uso uso,
+            Pageable pageable
     ) {
         return this.repository.buscar(
-                marca, genero, tipoPrenda, talla, temporada, uso
-                ).stream()
-                .map(ProductoDto::toDto)
-                .collect(Collectors.toList()
-                );
+                marca, genero, tipoPrenda, talla, temporada, uso, pageable
+                ).map(ProductoDto::toDto);
     }
 
     @Override
