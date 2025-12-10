@@ -1,6 +1,5 @@
 package com.boutique.controller;
 
-import com.boutique.entity.dto.InventarioDto;
 import com.boutique.entity.dto.PaginacionDto;
 import com.boutique.entity.dto.ProductoDto;
 import com.boutique.entity.enums.*;
