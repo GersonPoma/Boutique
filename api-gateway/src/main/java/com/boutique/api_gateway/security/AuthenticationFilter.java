@@ -33,7 +33,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/api/auth/login",
             "/api/auth/login2",
             "/api/auth/refresh",
-            "/api/clientes/con-usuario"
+            "/api/clientes/con-usuario",
+            "/api/catalogo/**"
     );
 
     @Override
