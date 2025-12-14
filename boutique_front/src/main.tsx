@@ -6,6 +6,7 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { AuthProvider } from './context/AuthContext.tsx'
+import { CarritoProvider } from './context/CartContext.tsx'
 import { ThemeProvider } from '@mui/material/styles'
 import { theme } from './theme/theme.ts'
 import { AppRouter } from './router/AppRouter.tsx'
@@ -14,10 +15,12 @@ import CssBaseline from '@mui/material/CssBaseline'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppRouter />
-      </ThemeProvider>
+      <CarritoProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppRouter />
+        </ThemeProvider>
+      </CarritoProvider>
     </AuthProvider>
   </StrictMode>,
 )
