@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Box, Button, Container, TextField, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Rol } from '../../types/usuario';
 
 export const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,8 +14,14 @@ export const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password);
-      navigate('/');
+      const loggedUser = await login(username, password);
+      
+      // Redirigir según el rol
+      if (loggedUser.rol === Rol.CLIENTE) {
+        navigate('/catalogo');
+      } else {
+        navigate('/dashboard');
+      }
     } catch {
       setError('Credenciales incorrectas');
     }
@@ -44,6 +51,19 @@ export const Login = () => {
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
             Entrar
           </Button>
+          
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              ¿No tienes una cuenta?{' '}
+              <Button
+                variant="text"
+                onClick={() => navigate('/registro')}
+                sx={{ textTransform: 'none' }}
+              >
+                Regístrate aquí
+              </Button>
+            </Typography>
+          </Box>
         </Box>
       </Paper>
     </Container>
