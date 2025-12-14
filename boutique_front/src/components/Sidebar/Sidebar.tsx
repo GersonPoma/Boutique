@@ -3,6 +3,8 @@ import { Drawer, List, IconButton, Toolbar, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import { SidebarItem } from './SidebarItem';
 import { useAuth } from '../../context/AuthContext';
 import { Rol } from '../../types/usuario';
@@ -17,20 +19,22 @@ type MenuItem = {
 };
 
 const MENU: MenuItem[] = [
-  { label: 'Dashboard', to: '/',      icon: <DashboardIcon />, roles: [Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR] },
-  { label: 'Usuarios',  to: '/usuarios', icon: <PeopleIcon />,    roles: [Rol.ADMIN] },
-  { label: 'Inventario', to: '/inventario', icon: <InventoryRounded />, roles: [
+  { label: 'Dashboard', to: '/dashboard',      icon: <DashboardIcon />, roles: [Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR] },
+  { label: 'Usuarios',  to: '/dashboard/usuarios', icon: <PeopleIcon />,    roles: [Rol.ADMIN] },
+  { label: 'Inventario', to: '/dashboard/inventario', icon: <InventoryRounded />, roles: [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR, Rol.INVENTARISTA
   ] },
-  { label: 'Ventas', to: '/venta', icon: <PointOfSaleSharp />, roles: [
+  { label: 'Ventas', to: '/dashboard/venta', icon: <PointOfSaleSharp />, roles: [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
   ] },
-  { label: 'Pagos', to: '/pago', icon: <AccountBalanceWalletIcon />, roles: [
+  { label: 'Pagos', to: '/dashboard/pago', icon: <AccountBalanceWalletIcon />, roles: [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
   ] },
-  { label: 'Reportes', to: '/reportes', icon: <Report />, roles: [
+  { label: 'Reportes', to: '/dashboard/reportes', icon: <Report />, roles: [
     Rol.ADMIN, Rol.GERENTE, Rol.VENDEDOR
   ] },
+  { label: 'Catálogo', to: '/catalogo', icon: <StorefrontIcon />, roles: [Rol.CLIENTE] },
+  { label: 'Mis Compras', to: '/mis-compras', icon: <ShoppingBagIcon />, roles: [Rol.CLIENTE] },
 ];
 
 export function Sidebar() {
