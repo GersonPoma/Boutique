@@ -21,6 +21,7 @@ export interface CrearUsuario {
 
 export interface User {
   id: number;
+  username?: string;
   rol: Rol;
   id_sucursal?: number;
 }
