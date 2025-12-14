@@ -10,7 +10,7 @@ interface AuthContextType {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<User>;
   logout: () => void;
 }
 
@@ -31,8 +31,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { access_token, refresh_token } = await apiLogin(username, password);
     setAccessToken(access_token);
     setRefreshToken(refresh_token);
-    setUser(getUserFromToken(access_token));   // solo se decodifica aquí
+    const loggedUser = getUserFromToken(access_token);
+    setUser(loggedUser);   // solo se decodifica aquí
     setTokens(access_token, refresh_token);
+    return loggedUser!;
   };
 
   const logout = () => {
