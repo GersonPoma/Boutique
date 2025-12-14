@@ -72,6 +72,15 @@ public class InventarioController {
         return ResponseEntity.ok(PaginacionDto.fromPage(inventarios));
     }
 
+    @GetMapping("stock-sucursal-producto")
+    public ResponseEntity<Integer> obtenerStockPorSucursalYProducto(
+            @RequestParam Long idSucursal,
+            @RequestParam Long idProducto
+    ) {
+        Integer stock = this.service.getStockPorSucursalYProducto(idSucursal, idProducto);
+        return ResponseEntity.ok(stock);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<InventarioDto> obtenerInventarioPorId(Long id) {
         InventarioDto inventario = service.obtenerInventarioPorId(id);

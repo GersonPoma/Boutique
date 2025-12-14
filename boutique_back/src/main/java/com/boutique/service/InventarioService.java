@@ -18,5 +18,6 @@ public interface InventarioService {
     InventarioDto obtenerInventarioPorSucursalYProducto(Long idSucursal, Long idProducto);
     InventarioDto crearInventario(InventarioDto nuevoInventario);
     InventarioDto actualizarInventario(Long id, InventarioDto inventarioDto);
+    Integer getStockPorSucursalYProducto(Long idSucursal, Long idProducto);
     void eliminarInventario(Long id);
 }

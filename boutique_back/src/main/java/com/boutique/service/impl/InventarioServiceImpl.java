@@ -77,6 +77,12 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
+    public Integer getStockPorSucursalYProducto(Long idSucursal, Long idProducto) {
+        Inventario inventario = this.getInventarioBySucursalYProducto(idSucursal, idProducto);
+        return inventario.getCantidad();
+    }
+
+    @Override
     @Transactional
     public void eliminarInventario(Long id) {
         Inventario inventarioExistente = this.getInventarioById(id);
